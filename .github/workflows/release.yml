@@ -1,4 +1,4 @@
-name: Build X-UI Android ARM64
+name: Build X-UI Android ARM64 with CGO
 
 on:
   workflow_dispatch:
@@ -16,13 +16,21 @@ jobs:
       with:
         go-version: '1.21'
 
+    - name: Install cross-compilation dependencies
+      run: sudo apt-get update && sudo apt-get install -y gcc-aarch64-linux-gnu
+
     - name: Replace core name
       run: |
         find . -type f -exec sed -i 's/xray-linux-arm64/com.gray.boxstream/g' {} +
 
-    - name: Build x-ui for Android ARM64
+    - name: Build x-ui for Android ARM64 with CGO
+      env:
+        GOOS: linux
+        GOARCH: arm64
+        CGO_ENABLED: 1
+        CC: aarch64-linux-gnu-gcc
       run: |
-        GOOS=linux GOARCH=arm64 go build -o x-ui-android-arm64 main.go
+        go build -o x-ui-android-arm64 main.go
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
