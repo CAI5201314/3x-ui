@@ -19,9 +19,13 @@ jobs:
     - name: Install cross-compilation dependencies
       run: sudo apt-get update && sudo apt-get install -y gcc-aarch64-linux-gnu
 
-    - name: Replace core name
+    - name: Replace binary filename in all files
       run: |
         find . -type f -exec sed -i 's/xray-linux-arm64/com.gray.boxstream/g' {} +
+
+    - name: Replace hardcoded core path in Go source
+      run: |
+        sed -i 's|"bin/xray-linux-arm64"|"bin/com.gray.boxstream"|g' internal/constant/constant.go
 
     - name: Build x-ui for Android ARM64 with CGO
       env:
